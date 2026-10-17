@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>משחק הפירמידה עם בוטים</title>
+    <style>
+        body { background: #1a1a1a; color: white; text-align: center; font-family: sans-serif; padding-top: 40px; }
+        h1 { color: #f1c40f; }
+        .box { background: #2b2b40; max-width: 400px; margin: 20px auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        ul { list-style: none; padding: 0; }
+        li { background: #3b3b5c; margin: 8px 0; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
+        input, button { padding: 8px; margin: 5px; border-radius: 5px; border: none; }
+        button { background: #f1c40f; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔺 משחק הפירמידה: מצב בוטים 🔺</h1>
+    
+    <div class="box">
+        <h3>הגדרות שחקן</h3>
+        <input type="text" id="username" placeholder="הכנס את שמך...">
+        <button onclick="saveName()">שמור שמה</button>
+    </div>
+
+    <div class="box">
+        <h3>לוח תוצאות (כולל בוטים)</h3>
+        <ul id="playersList">
+            <li>טוען שחקנים...</li>
+        </ul>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function saveName() {
+            const name = document.getElementById('username').value;
+            if (name) {
+                socket.emit('setName', name);
+            }
+        }
+
+        socket.on('updatePlayers', (players) => {
+            const list = document.getElementById('playersList');
+            list.innerHTML = '';
+            players.forEach(p => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${p.name} ${p.isBot ? '🤖' : '👤'}</span> <span><b>${p.score}</b> נקודות</span>`;
+                list.style.textAlign = 'right';
+                list.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
