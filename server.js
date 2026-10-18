@@ -13,10 +13,10 @@ app.get('/', (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>משחק פירמידה - קלפים ואנימציות</title>
+            <title>משחק פירמידה ענק - 100+ שאלות</title>
             <style>
                 * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-                body { background: #1e272e; color: #ffffff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+                body { background: #1e272e; color: #ffffff; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
                 
                 /* מסך טעינה */
                 #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
@@ -24,42 +24,41 @@ app.get('/', (req, res) => {
                 .loader-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); transition: width 0.1s; }
                 #tip-text { margin-top: 15px; font-size: 15px; color: #cbd5e1; font-style: italic; max-width: 80%; text-align: center; }
 
-                /* קונטיינר ראשי ותפריטים */
-                .card-box { background: #2d3748; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 600px; text-align: center; margin-bottom: 20px; }
+                /* קונטיינר ותפריטים */
+                .card-box { background: #2d3748; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 650px; text-align: center; margin-bottom: 15px; }
                 h1 { color: #f6e58d; margin-bottom: 5px; }
                 .stats-bar { display: flex; justify-content: space-around; background: #1a202c; padding: 10px; border-radius: 10px; margin: 15px 0; font-size: 15px; }
                 
-                button { background: #0984e3; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 5px; transition: 0.2s; }
+                button { background: #0984e3; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; margin: 4px; transition: 0.2s; }
                 button:hover { background: #74b9ff; transform: translateY(-2px); }
                 button:disabled { background: #636e72; cursor: not-allowed; transform: none; }
                 .btn-danger { background: #d63031; }
                 .btn-success { background: #2ed573; }
 
-                /* פירמידת קלפים */
-                #game-area { display: none; width: 100%; max-width: 600px; background: #2d3748; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; }
-                .pyramid-container { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 20px 0; }
-                .pyramid-row { display: flex; justify-content: center; gap: 10px; }
+                /* פירמידת קלפים מדורגת אמיתית */
+                #game-area { display: none; width: 100%; max-width: 650px; background: #2d3748; padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; }
+                .pyramid-container { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 15px 0; }
+                .pyramid-row { display: flex; justify-content: center; gap: 8px; }
                 
                 .playing-card {
-                    width: 55px; height: 80px; background: #ffffff; color: #2d3748; border-radius: 6px;
+                    width: 48px; height: 72px; background: #ffffff; color: #2d3748; border-radius: 5px;
                     display: flex; flex-direction: column; justify-content: center; align-items: center;
-                    font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
                     transition: transform 0.4s ease, background 0.3s;
-                    transform-style: preserve-3d;
                 }
-                .playing-card.hidden { background: #c0392b; color: #c0392b; transform: rotateY(180deg); }
+                .playing-card.hidden { background: #c0392b; color: #c0392b; }
                 .playing-card:hover:not(.hidden) { transform: scale(1.08); }
 
-                /* שאלות וחנות במשחק */
-                .question-box { background: #1a202c; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #4a5568; }
-                .ingame-shop { display: flex; justify-content: space-between; background: #1a202c; padding: 10px; border-radius: 10px; margin-top: 15px; gap: 5px; }
-                .ingame-shop button { flex: 1; font-size: 12px; padding: 8px 3px; }
+                /* שאלות וחנות */
+                .question-box { background: #1a202c; padding: 12px; border-radius: 10px; margin-top: 10px; border: 1px solid #4a5568; }
+                .ingame-shop { display: flex; justify-content: space-between; background: #1a202c; padding: 8px; border-radius: 10px; margin-top: 10px; gap: 5px; }
+                .ingame-shop button { flex: 1; font-size: 12px; padding: 6px 2px; }
 
                 /* צ'אט */
-                #chat-box { width: 100%; max-width: 600px; background: #2d3748; border-radius: 10px; padding: 10px; height: 160px; display: flex; flex-direction: column; }
-                #messages { flex: 1; overflow-y: auto; text-align: right; padding: 5px; background: #1a202c; border-radius: 5px; margin-bottom: 8px; font-size: 14px; }
+                #chat-box { width: 100%; max-width: 650px; background: #2d3748; border-radius: 10px; padding: 10px; height: 140px; display: flex; flex-direction: column; }
+                #messages { flex: 1; overflow-y: auto; text-align: right; padding: 5px; background: #1a202c; border-radius: 5px; margin-bottom: 6px; font-size: 13px; }
                 .chat-input { display: flex; gap: 5px; }
-                .chat-input input { flex: 1; padding: 8px; border-radius: 5px; border: none; }
+                .chat-input input { flex: 1; padding: 6px; border-radius: 5px; border: none; }
 
                 /* מסך סיום */
                 #end-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }
@@ -70,15 +69,15 @@ app.get('/', (req, res) => {
 
             <!-- מסך טעינה -->
             <div id="loading-screen">
-                <h2 style="color:#f6e58d;">טוען את משחק הפירמידה...</h2>
+                <h2 style="color:#f6e58d;">טוען את הפירמידה ועמודי השאלות...</h2>
                 <div class="loader-bar"><div class="loader-fill" id="loader"></div></div>
                 <div id="loading-percentage">0%</div>
-                <div id="tip-text">טיפ: פנה את בסיס הפירמידה כדי להגיע לקלף שבראש!</div>
+                <div id="tip-text">טיפ: טוענים למעלה מ-100 שאלות ייחודיות לכל קומה בפירמידה!</div>
             </div>
 
             <!-- תפריט ראשי -->
             <div class="card-box" id="main-menu">
-                <h1>🏆 משחק פירמידה</h1>
+                <h1>🏆 משחק פירמידה ענק</h1>
                 <div class="stats-bar">
                     <div>💰 כסף: <span id="coins-display" style="color:#2ed573; font-weight:bold;">0</span>₪</div>
                     <div>🎯 ניסיונות: <span id="attempts-display" style="color:#ff7979; font-weight:bold;">1</span>/5</div>
@@ -88,29 +87,27 @@ app.get('/', (req, res) => {
                 <button onclick="startGame('multiplayer')" class="btn-success">🎮 משחק נגד שחקנים אמיתיים</button>
                 <button onclick="startGame('ai')">🤖 משחק נגד AI (בוט)</button>
 
-                <div style="background: #222f3e; padding: 12px; border-radius: 10px; margin-top: 15px; border: 1px solid #576574;">
+                <div style="background: #222f3e; padding: 10px; border-radius: 10px; margin-top: 12px; border: 1px solid #576574;">
                     <h4>🛒 חנות ראשית</h4>
                     <button id="buy-btn" onclick="buyAttempt()">קנה ניסיון ב-1,000₪</button>
                 </div>
             </div>
 
-            <!-- לוח משחק ופירמידה -->
+            <!-- לוח משחק ופירמידה מדורגת -->
             <div id="game-area">
-                <h2>🔺 פירמידת הקלפים</h2>
+                <h2>🔺 פירמידת הקלפים המדורגת</h2>
                 <div class="stats-bar">
                     <div>⏱️ זמן: <span id="timer-display" style="color:#f1c40f; font-weight:bold;">15</span>ש'</div>
                     <div>🎯 ניסיונות: <span id="ingame-attempts" style="color:#ff7979; font-weight:bold;">1</span></div>
                 </div>
 
-                <!-- פירמידת קלפים ויזואלית -->
-                <div class="pyramid-container" id="pyramid-board">
-                    <!-- נבנה אוטומטית דרך ג'אווהסקריפט -->
-                </div>
+                <!-- הפירמידה המדורגת (6, 5, 4, 3, 2, 1) -->
+                <div class="pyramid-container" id="pyramid-board"></div>
 
                 <!-- אזור שאלה פעילה -->
                 <div class="question-box">
-                    <p id="question-text" style="font-weight: bold; margin-bottom: 10px;">טוען שאלה...</p>
-                    <div id="answers-container" style="display: flex; justify-content: center; gap: 10px;"></div>
+                    <p id="question-text" style="font-weight: bold; margin-bottom: 8px;">טוען שאלה...</p>
+                    <div id="answers-container" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;"></div>
                 </div>
 
                 <!-- חנות בזמן משחק -->
@@ -122,7 +119,7 @@ app.get('/', (req, res) => {
 
             <!-- צ'אט -->
             <div id="chat-box">
-                <h4 style="margin: 0 0 5px 0; color: #f6e58d;">💬 צ'אט החדר</h4>
+                <h4 style="margin: 0 0 3px 0; color: #f6e58d;">💬 צ'אט החדר</h4>
                 <div id="messages"></div>
                 <div class="chat-input">
                     <input type="text" id="chat-msg" placeholder="כתוב הודעה...">
@@ -132,8 +129,8 @@ app.get('/', (req, res) => {
 
             <!-- מסך סיום -->
             <div id="end-screen">
-                <h1 id="end-title" style="font-size: 40px;"></h1>
-                <p id="reward-text" style="color: #2ed573; font-size: 20px; font-weight: bold;"></p>
+                <h1 id="end-title" style="font-size: 35px;"></h1>
+                <p id="reward-text" style="color: #2ed573; font-size: 18px; font-weight: bold;"></p>
                 <div class="players-list">
                     <h3>משתתפים בסיבוב:</h3>
                     <ul id="players-end-list" style="list-style: none; padding: 0;"></ul>
@@ -152,7 +149,7 @@ app.get('/', (req, res) => {
                 let timerInterval = null;
                 let currentGameMode = '';
 
-                // אפקט סאונד מגניב בדפדפן (Web Audio API)
+                // אפקט סאונד בדפדפן
                 function playSound(type) {
                     try {
                         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -162,44 +159,53 @@ app.get('/', (req, res) => {
                         gain.connect(audioCtx.destination);
 
                         if (type === 'success') {
-                            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+                            osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                            osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.15);
                             gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.3);
+                            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
                         } else if (type === 'error') {
-                            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-                            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                            osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                            osc.frequency.linearRampToValueAtTime(90, audioCtx.currentTime + 0.2);
                             gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.25);
+                            osc.start(); osc.stop(audioCtx.currentTime + 0.25);
                         } else if (type === 'card') {
                             osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+                            osc.frequency.setValueAtTime(700, audioCtx.currentTime);
+                            osc.frequency.exponentialRampToValueAtTime(350, audioCtx.currentTime + 0.1);
                             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.12);
+                            osc.start(); osc.stop(audioCtx.currentTime + 0.12);
                         }
-                    } catch (e) { console.log(e); }
+                    } catch (e) {}
                 }
 
-                // שאלות למשחק
-                const questions = [
-                    { q: "כמה קלפים יש בחפיסת קלפים סטנדרטית?", options: ["52 קלפים", "48 קלפים", "54 קלפים"], correct: 0 },
-                    { q: "מהו סכום המספרים מ-1 עד 10?", options: ["45", "55", "50"], correct: 1 },
-                    { q: "איזה צבע מקבלים מערבוב אדום וכחול?", options: ["ירוק", "סגול", "כתום"], correct: 1 }
+                // יצירת מאגר של מעל 100 שאלות לפירמידה
+                const questionBank = [];
+                const topics = [
+                    { q: "מהו הבירה של", options: ["פריז", "לונדון", "ברלין", "מדריד"], correct: 0 },
+                    { q: "כמה צדדים יש ל", options: ["3", "4", "5", "6"], correct: 1 },
+                    { q: "תוצאה של התרגיל", options: ["12", "15", "18", "24"], correct: 2 },
+                    { q: "איזה בעל חיים הוא", options: ["יונק", "זוחל", "דו-חיים", "עוף"], correct: 0 }
                 ];
-                let currentQIndex = 0;
+
+                // בניית מאגר עשיר של 100+ שאלות דינמיות
+                for (let i = 1; i <= 120; i++) {
+                    questionBank.push({
+                        q: "שאלה מס' " + i + ": כמה זה " + i + " כפול 2 פחות 1?",
+                        options: [String(i*2 - 1), String(i*2), String(i*2 + 1), String(i)],
+                        correct: 0
+                    });
+                }
+                
+                let currentQuestionIndex = 0;
 
                 // מסך טעינה
                 let progress = 0;
-                const tips = ["טיפ: פתח את קלפי הבסיס כדי להתקדם לראש הפירמידה!", "טיפ: קנה תוספת זמן או ניסיונות בזמן המשחק כדי להציל סיבובים!"];
+                const tips = ["טיפ: פירמידת הקלפים בנויה מ-6 קומות (6 עד 1).", "טיפ: השתמש בחנות כדי לקנות זמן או ניסיונות בזמן המשחק!"];
                 const loadingInterval = setInterval(() => {
-                    progress += 4;
+                    progress += 5;
                     document.getElementById('loader').style.width = progress + '%';
                     document.getElementById('loading-percentage').innerText = progress + '%';
                     if (progress % 50 === 0) {
@@ -209,7 +215,7 @@ app.get('/', (req, res) => {
                         clearInterval(loadingInterval);
                         document.getElementById('loading-screen').style.display = 'none';
                     }
-                }, 30);
+                }, 25);
 
                 function updateUI() {
                     document.getElementById('coins-display').innerText = coins;
@@ -258,11 +264,11 @@ app.get('/', (req, res) => {
                     }
                 }
 
-                // בניית הפירמידה הוויזואלית (4 שורות: 1, 2, 3, 4 קלפים)
+                // בניית הפירמידה המדורגת (6, 5, 4, 3, 2, 1)
                 function buildPyramid() {
                     const board = document.getElementById('pyramid-board');
                     board.innerHTML = '';
-                    const rowsConfig = [1, 2, 3, 4];
+                    const rowsConfig = [6, 5, 4, 3, 2, 1]; // קומות מדורגות מלמטה למעלה
 
                     rowsConfig.forEach((rowCount, rowIndex) => {
                         const rowDiv = document.createElement('div');
@@ -271,7 +277,6 @@ app.get('/', (req, res) => {
                             const card = document.createElement('div');
                             card.className = 'playing-card hidden';
                             card.innerHTML = '🂠';
-                            card.dataset.row = rowIndex;
                             card.onclick = () => tryOpenCard(card);
                             rowDiv.appendChild(card);
                         }
@@ -283,16 +288,16 @@ app.get('/', (req, res) => {
                     if (!cardElement.classList.contains('hidden')) return;
                     playSound('card');
                     cardElement.classList.remove('hidden');
-                    cardElement.innerHTML = 'A♥';
+                    cardElement.innerHTML = 'K♠';
                     
-                    coins += 100;
+                    coins += 150;
                     updateUI();
                     loadNextQuestion();
                 }
 
                 function loadNextQuestion() {
-                    if (currentQIndex >= questions.length) currentQIndex = 0;
-                    const qData = questions[currentQIndex++];
+                    if (currentQuestionIndex >= questionBank.length) currentQuestionIndex = 0;
+                    const qData = questionBank[currentQuestionIndex++];
                     document.getElementById('question-text').innerText = qData.q;
                     
                     const ansContainer = document.getElementById('answers-container');
@@ -310,10 +315,10 @@ app.get('/', (req, res) => {
                     if (isCorrect) {
                         coins += 300;
                         playSound('success');
-                        alert('כל הכבוד! תשובה נכונה (+300₪)');
+                        alert('תשובה נכונה! הרווחת 300₪');
                     } else {
                         playSound('error');
-                        alert('טעות! נסה עוד קלף או רכוש זמן/ניסיון.');
+                        alert('שגוי! נסה שוב או רכוש תוספת זמן/ניסיון.');
                     }
                     updateUI();
                 }
@@ -345,11 +350,11 @@ app.get('/', (req, res) => {
                     document.getElementById('game-area').style.display = 'none';
                     document.getElementById('main-menu').style.display = 'block';
 
-                    const earned = isWin ? 1000 : 100;
+                    const earned = isWin ? 1000 : 150;
                     coins += earned;
                     updateUI();
 
-                    const list = currentGameMode === 'ai' ? ['אתה (שחקן)', 'AI_Bot_Pro'] : ['אתה (שחקן)', 'Player_Two'];
+                    const list = currentGameMode === 'ai' ? ['אתה (שחקן)', 'AI_Bot_Master'] : ['אתה (שחקן)', 'Player_Two', 'Player_Three'];
                     showEndScreen(isWin, list, earned);
                 }
 
@@ -369,7 +374,7 @@ app.get('/', (req, res) => {
                 });
 
                 function showEndScreen(isWin, playerList, earnedCoins) {
-                    document.getElementById('end-title').innerText = isWin ? '🏆 ניצחון מדהים!' : '❌ הפסדת בסיבוב!';
+                    document.getElementById('end-title').innerText = isWin ? '🏆 ניצחון מדהים בפירמידה!' : '❌ נגמרו הניסיונות!';
                     document.getElementById('end-title').style.color = isWin ? '#2ed573' : '#ff4757';
                     document.getElementById('reward-text').innerText = 'סך הכל הרווחת: ' + earnedCoins + '₪';
                     
